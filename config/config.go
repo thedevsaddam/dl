@@ -88,7 +88,7 @@ func CreateConfig(c Config) error {
 		return err
 	}
 
-	if err := os.MkdirAll(configDir, 0777); err != nil {
+	if err := os.MkdirAll(configDir, os.ModePerm); err != nil {
 		return err
 	}
 
