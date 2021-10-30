@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	icon = ".dl101.png"
+	configDirectory = ".dl"
+	icon            = ".dl" + "/icon.png"
 )
 
 func getIconPath() (string, error) {

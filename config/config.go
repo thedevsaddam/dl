@@ -11,7 +11,12 @@ import (
 )
 
 const (
-	configFileName = ".dl.config.json"
+	configDirectory = ".dl"
+	configFileName  = configDirectory + "/config.json"
+)
+
+var (
+	defaultConfig Config
 )
 
 // Config represent configurations for the download manager
@@ -21,7 +26,13 @@ type Config struct {
 	SubDirMap   values.MapStrSliceString `json:"sub_dir_map"`
 }
 
-var defaultConfig Config
+func getConfigDir() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(homeDir, configDirectory), nil
+}
 
 func getConfigFileName() (string, error) {
 	homeDir, err := os.UserHomeDir()
@@ -71,10 +82,21 @@ func CreateConfig(c Config) error {
 	if err != nil {
 		return err
 	}
+
+	configDir, err := getConfigDir()
+	if err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(configDir, 0777); err != nil {
+		return err
+	}
+
 	fn, err := getConfigFileName()
 	if err != nil {
 		return err
 	}
+
 	return ioutil.WriteFile(fn, bb, 0644)
 }
 
