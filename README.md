@@ -14,16 +14,16 @@ $ dl -u https://www.url.com/foo.ext
 #### Installation on Mac/Linux
 ```bash
 curl https://raw.githubusercontent.com/thedevsaddam/dl/main/install.sh -o install.sh \
-&& sudo chmod +x install.sh \
-&& sudo ./install.sh \
+&& chmod +x install.sh \
+&& ./install.sh \
 && rm install.sh
 ```
 
 #### Uninstallation
 ```bash
 curl https://raw.githubusercontent.com/thedevsaddam/dl/main/uninstall.sh -o uninstall.sh \
-&& sudo chmod +x uninstall.sh \
-&& sudo ./uninstall.sh \
+&& chmod +x uninstall.sh \
+&& ./uninstall.sh \
 && rm uninstall.sh
 ```
 
