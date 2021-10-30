@@ -32,11 +32,13 @@ type DownloadManager struct {
 	stop      chan os.Signal
 	completed chan bool
 
-	fileName            string        // filename with extension
-	fileSize            uint64        // file size in bytes
-	totalDownloaded     uint64        // total file downloaded in bytes
-	totalChunkCompleted int32         // total completed chunks
-	totalTimeTaken      time.Duration // total time taken to complete downloading
+	fileName            string // filename with extension
+	fileSize            uint64 // file size in bytes
+	totalDownloaded     uint64 // total file downloaded in bytes
+	totalChunkCompleted int32  // total completed chunks
+	location            string // where the file stored
+
+	totalTimeTaken time.Duration // total time taken to complete downloading
 
 	errors []error // contains all the errors
 
@@ -103,7 +105,7 @@ func (d *DownloadManager) renderProgressBar(ctx context.Context, maxSize int) {
 				fmt.Printf("\nFile name: %s\n", d.fileName)
 				fmt.Printf("File size: %s\n", humanaReadableBytes(float64(d.fileSize)))
 				fmt.Printf("Total time: %s\n", d.totalTimeTaken)
-				fmt.Printf("Open: %s/%s\n", d.option.path, d.fileName)
+				fmt.Printf("Location: %s\n", d.location)
 			},
 		),
 	)
@@ -195,6 +197,8 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 	if d.option.path != "" {
 		d.option.log.Printf("Info: Root directory: %s\n", d.option.path)
 
+		fileName = fmt.Sprintf("%s/%s", d.option.path, d.fileName)
+
 		if !d.option.skipSubPathMap {
 			subPath := "other"
 			if sp := d.option.subPathMap.Get(filepath.Ext(d.fileName)); sp != "" {
@@ -214,9 +218,8 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 
 			fileName = fmt.Sprintf("%s/%s/%s", d.option.path, subPath, d.fileName)
 		}
-
-		fileName = fmt.Sprintf("%s/%s", d.option.path, d.fileName)
 	}
+	d.location = fileName // set location value
 
 	if _, err := os.Create(fileName); err != nil {
 		d.option.log.Printf("Error: failed to create file: %s\n", err.Error())
