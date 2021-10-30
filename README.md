@@ -8,7 +8,7 @@ Command-line file downloader tool
 $ dl -u https://www.url.com/foo.ext
 ```
 
-![Alt Text](example.gif)
+![Example screenshots](example.gif)
 
 
 #### Installation on Mac/Linux
