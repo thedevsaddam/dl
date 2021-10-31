@@ -117,10 +117,8 @@ func (d *DownloadManager) renderProgressBar(ctx context.Context, maxSize int) {
 		for {
 			select {
 			case <-d.stop:
-				d.option.log.Println("Operation cancelled!")
-				fmt.Printf("\nOperation cancelled!\n")
 				ticker.Stop()
-				os.Exit(1)
+				return
 			case <-d.completed:
 				ticker.Stop()
 				d.option.log.Println("Download completed!")
@@ -151,7 +149,7 @@ func (d *DownloadManager) populateFileInfo(ctx context.Context, url string) erro
 
 	d.option.log.Printf("Info: fetching file information: %s\n", url)
 
-	err := retry.DoFunc(5, 1*time.Second, func() error {
+	err := retry.DoFunc(20, 1*time.Second, func() error {
 		ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 		defer cancel()
 
@@ -224,6 +222,17 @@ func (d *DownloadManager) downloadChunk(ctx context.Context, dm *DownloadManager
 // Download download files based on configurations
 func (d *DownloadManager) Download(url string) *DownloadManager {
 	signal.Notify(d.stop, syscall.SIGKILL, syscall.SIGINT, syscall.SIGQUIT)
+	go func() {
+		for range d.stop {
+			close(d.stop) // close the channed
+			d.option.log.Println("Operation cancelled!")
+			fmt.Printf("\nOperation cancelled!\n")
+			// make cursor visible if interruption happened while fetching meta
+			io.WriteString(os.Stdout, "\033[?25h")
+			os.Exit(1)
+		}
+	}()
+
 	startedAt := time.Now()
 	fmt.Println()
 
