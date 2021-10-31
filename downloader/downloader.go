@@ -180,21 +180,21 @@ func (d *DownloadManager) populateFileInfo(ctx context.Context, url string) erro
 }
 
 // downloadChunk download single chunk from the range
-func (d *DownloadManager) downloadChunk(ctx context.Context, dm *DownloadManager, url string, min, max, chunkNo int, errCh chan error) {
-	defer dm.wg.Done()
+func (d *DownloadManager) downloadChunk(ctx context.Context, url string, min, max, chunkNo int, errCh chan error) {
+	defer d.wg.Done()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		dm.option.log.Printf("Error[%d]: failed to create HTTP/GET request: %s\n", chunkNo, err.Error())
+		d.option.log.Printf("Error[%d]: failed to create HTTP/GET request: %s\n", chunkNo, err.Error())
 		errCh <- err
 		return
 	}
 
 	rangeHeader := "bytes=" + strconv.Itoa(min) + "-" + strconv.Itoa(max-1)
 	req.Header.Add("Range", rangeHeader)
-	resp, err := dm.client.Do(req)
+	resp, err := d.client.Do(req)
 	if err != nil {
-		dm.option.log.Printf("Error[%d]: failed to perform HTTP/GET request: %s\n", chunkNo, err.Error())
+		d.option.log.Printf("Error[%d]: failed to perform HTTP/GET request: %s\n", chunkNo, err.Error())
 		errCh <- err
 		return
 	}
@@ -210,19 +210,19 @@ func (d *DownloadManager) downloadChunk(ctx context.Context, dm *DownloadManager
 
 	_, err = f.Seek(int64(min), 0)
 	if err != nil {
-		dm.option.log.Printf("Error[%d]: failed to seek file: %s\n", chunkNo, err.Error())
+		d.option.log.Printf("Error[%d]: failed to seek file: %s\n", chunkNo, err.Error())
 		errCh <- err
 		return
 	}
 
 	_, err = io.Copy(f, Reader{resp.Body, &d.totalDownloaded})
 	if err != nil {
-		dm.option.log.Printf("Error[i]: failed to copy file content: %s\n", chunkNo, err.Error())
+		d.option.log.Printf("Error[i]: failed to copy file content: %s\n", chunkNo, err.Error())
 		errCh <- err
 		return
 	}
 
-	atomic.AddInt32(&dm.totalChunkCompleted, 1)
+	atomic.AddInt32(&d.totalChunkCompleted, 1)
 }
 
 // Download download files based on configurations
@@ -321,7 +321,7 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 		if i == d.option.concurrency-1 {
 			max += rem
 		}
-		go d.downloadChunk(ctx, d, url, min, max, i, errsCh)
+		go d.downloadChunk(ctx, url, min, max, i, errsCh)
 	}
 
 	// run async task for refreshing progressbar
