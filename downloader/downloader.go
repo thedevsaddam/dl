@@ -230,7 +230,6 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 	signal.Notify(d.stop, syscall.SIGKILL, syscall.SIGINT, syscall.SIGQUIT)
 	go func() {
 		for range d.stop {
-			close(d.stop) // close the channel
 			d.option.log.Println("Operation cancelled!")
 			fmt.Printf("\nOperation cancelled!\n")
 			// make cursor visible if interruption happened while fetching meta
