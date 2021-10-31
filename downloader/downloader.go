@@ -150,7 +150,7 @@ func (d *DownloadManager) populateFileInfo(ctx context.Context, url string) erro
 	d.option.log.Printf("Info: fetching file's meta information: %s\n", url)
 	retryCount := 0
 
-	err := retry.DoFunc(20, 1*time.Second, func() error {
+	err := retry.DoFunc(20, 200*time.Millisecond, func() error {
 		ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 		defer cancel()
 
