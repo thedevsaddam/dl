@@ -119,12 +119,13 @@ func startDownload(cmd *cobra.Command, args []string) {
 
 	errs := dm.Download(url).Errors()
 	if len(errs) > 0 {
-		log.Fatalln("Download failed")
+		fmt.Printf("\nDownload failed\n")
 		if debug {
 			for _, e := range errs {
 				log.Println("Error:", e)
 			}
 		}
+		os.Exit(1)
 		return
 	}
 

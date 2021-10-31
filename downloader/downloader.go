@@ -15,6 +15,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/schollz/progressbar/v3"
 	"github.com/thedevsaddam/dl/logger"
 	"github.com/thedevsaddam/retry"
@@ -174,6 +175,52 @@ func (d *DownloadManager) populateFileInfo(ctx context.Context, url string) erro
 	return err
 }
 
+// downloadChunk download single chunk from the range
+func (d *DownloadManager) downloadChunk(ctx context.Context, dm *DownloadManager, url string, min, max, chunkNo int, errCh chan error) {
+	defer dm.wg.Done()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		dm.option.log.Printf("Error[%d]: failed to create HTTP/GET request: %s\n", chunkNo, err.Error())
+		errCh <- err
+		return
+	}
+
+	rangeHeader := "bytes=" + strconv.Itoa(min) + "-" + strconv.Itoa(max-1)
+	req.Header.Add("Range", rangeHeader)
+	resp, err := dm.client.Do(req)
+	if err != nil {
+		dm.option.log.Printf("Error[%d]: failed to perform HTTP/GET request: %s\n", chunkNo, err.Error())
+		errCh <- err
+		return
+	}
+	defer resp.Body.Close()
+
+	f, err := os.OpenFile(d.location, os.O_RDWR, 0644)
+	if err != nil {
+		d.option.log.Printf("Error[%d]: failed to open file: %s\n", chunkNo, err.Error())
+		errCh <- err
+		return
+	}
+	defer f.Close()
+
+	_, err = f.Seek(int64(min), 0)
+	if err != nil {
+		dm.option.log.Printf("Error[%d]: failed to seek file: %s\n", chunkNo, err.Error())
+		errCh <- err
+		return
+	}
+
+	_, err = io.Copy(f, Reader{resp.Body, &d.totalDownloaded})
+	if err != nil {
+		dm.option.log.Printf("Error[i]: failed to copy file content: %s\n", chunkNo, err.Error())
+		errCh <- err
+		return
+	}
+
+	atomic.AddInt32(&dm.totalChunkCompleted, 1)
+}
+
 // Download download files based on configurations
 func (d *DownloadManager) Download(url string) *DownloadManager {
 	signal.Notify(d.stop, syscall.SIGKILL, syscall.SIGINT, syscall.SIGQUIT)
@@ -184,11 +231,17 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	if err := d.populateFileInfo(ctx, url); err != nil { // populate file information for future use
+	s := spinner.New(spinner.CharSets[70], 100*time.Millisecond, spinner.WithHiddenCursor(true)) // code:39 is earth for the lib
+	s.Prefix = "Fetching file's meta information ( "
+	s.Suffix = ")"
+	s.Start()
+	if err := d.populateFileInfo(ctx, url); err != nil {
 		d.addError(err)
 		cancel()
 		return d
 	}
+	s.Stop()
+	fmt.Println()
 
 	chunkLen := int(d.fileSize) / d.option.concurrency
 	rem := int(d.fileSize) % d.option.concurrency
@@ -230,68 +283,30 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 	d.option.log.Printf("Info: Created file: %s\n", fileName)
 
 	d.option.log.Printf("Downloading file with concurrency value: %d\n", d.option.concurrency)
+
+	errsCh := make(chan error, d.option.concurrency)
+	defer close(errsCh)
+
+	// read errors
+	go func() {
+		for {
+			if err := <-errsCh; err != nil {
+				d.addError(err)
+				if err != context.Canceled {
+					cancel()
+				}
+			}
+		}
+	}()
+
 	for i := 0; i < d.option.concurrency; i++ {
 		d.wg.Add(1)
-
 		min := chunkLen * i
 		max := chunkLen * (i + 1)
 		if i == d.option.concurrency-1 {
 			max += rem
 		}
-
-		go func(ctx context.Context, dm *DownloadManager, url string, min, max, i int) {
-			defer dm.wg.Done()
-
-			req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-			if err != nil {
-				dm.option.log.Printf("Error[%d]: failed to create HTTP/GET request: %s\n", i, err.Error())
-				dm.addError(err)
-				if err != context.Canceled {
-					cancel()
-				}
-				return
-			}
-
-			rangeHeader := "bytes=" + strconv.Itoa(min) + "-" + strconv.Itoa(max-1)
-			req.Header.Add("Range", rangeHeader)
-			resp, err := dm.client.Do(req)
-			if err != nil {
-				dm.option.log.Printf("Error[%d]: failed to perform HTTP/GET request: %s\n", i, err.Error())
-				dm.addError(err)
-				if err != context.Canceled {
-					cancel()
-				}
-				return
-			}
-			defer resp.Body.Close()
-
-			f, err := os.OpenFile(fileName, os.O_RDWR, 0644)
-			if err != nil {
-				d.option.log.Printf("Error[%d]: failed to open file: %s\n", i, err.Error())
-				dm.addError(err)
-				cancel()
-				return
-			}
-			defer f.Close()
-
-			_, err = f.Seek(int64(min), 0)
-			if err != nil {
-				dm.option.log.Printf("Error[%d]: failed to seek file: %s\n", i, err.Error())
-				dm.addError(err)
-				cancel()
-				return
-			}
-
-			_, err = io.Copy(f, Reader{resp.Body, &d.totalDownloaded})
-			if err != nil {
-				dm.option.log.Printf("Error[i]: failed to copy file content: %s\n", i, err.Error())
-				dm.addError(err)
-				cancel()
-				return
-			}
-
-			atomic.AddInt32(&dm.totalChunkCompleted, 1)
-		}(ctx, d, url, min, max, i)
+		go d.downloadChunk(ctx, d, url, min, max, i, errsCh)
 	}
 
 	// run async task for refreshing progressbar
