@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"log"
 	netUrl "net/url"
@@ -12,6 +13,7 @@ import (
 	"github.com/thedevsaddam/dl/downloader"
 	"github.com/thedevsaddam/dl/logger"
 	"github.com/thedevsaddam/dl/notifier"
+	"github.com/thedevsaddam/dl/update"
 )
 
 var logo = `
@@ -26,15 +28,19 @@ Command-line file downloader tool
 For more info visit: https://github.com/thedevsaddam/dl      
 `
 
+const (
+	unknown = "unknown"
+)
+
 var (
 	url        string
 	name       string
 	concurrent int
 	debug      bool
 
-	GitCommit = "unknown"
-	Version   = "unknown"
-	BuildDate = "unknown"
+	GitCommit = unknown
+	Version   = "v1.0.2"
+	BuildDate = "2021-10-15"
 
 	// cmdDL is the root command of DL application
 	cmdDL = &cobra.Command{
@@ -69,7 +75,17 @@ func initConfig() {
 	}
 }
 
+// startDownload fire the whole download process and orchestrate other dependent processes
 func startDownload(cmd *cobra.Command, args []string) {
+	cfg := config.DefaultConfig()
+
+	if cfg.AudoUpdate {
+		err := update.SelfUpdate(context.Background(), BuildDate, Version)
+		if err != nil {
+			fmt.Println("Failed to update dl:", err)
+		}
+	}
+
 	url = strings.TrimSpace(url)
 	if len(url) == 0 {
 		return
@@ -78,14 +94,13 @@ func startDownload(cmd *cobra.Command, args []string) {
 	if _, err := netUrl.ParseRequestURI(url); err != nil {
 		log.Fatalln(err)
 	}
+
 	dm := downloader.New()
 
 	if debug {
 		dm.ApplyOption(downloader.WithVerbose())
 		dm.ApplyOption(downloader.WithLogger(logger.New(true)))
 	}
-
-	cfg := config.DefaultConfig()
 
 	con := cfg.Concurrency
 	if concurrent != 0 { // assuming default is 5

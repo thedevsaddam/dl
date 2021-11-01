@@ -21,6 +21,7 @@ var (
 
 // Config represent configurations for the download manager
 type Config struct {
+	AudoUpdate  bool                     `json:"auto_update"`
 	Directory   string                   `json:"directory"`
 	Concurrency uint                     `json:"concurrency"`
 	SubDirMap   values.MapStrSliceString `json:"sub_dir_map"`
@@ -64,6 +65,7 @@ func LoadDefaultConfig() error {
 			".odt", ".pdf", ".rtf", ".tex", ".txt", ".wpd", ".md"}
 
 		CreateConfig(Config{
+			AudoUpdate:  true,
 			Concurrency: 5,
 			Directory:   "",
 			SubDirMap:   subDir,

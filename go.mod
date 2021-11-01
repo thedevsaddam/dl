@@ -3,6 +3,7 @@ module github.com/thedevsaddam/dl
 go 1.16
 
 require (
+	github.com/Masterminds/semver v1.5.0
 	github.com/briandowns/spinner v1.16.0
 	github.com/deckarep/gosx-notifier v0.0.0-20180201035817-e127226297fb // indirect
 	github.com/martinlindhe/notify v0.0.0-20181008203735-20632c9a275a
