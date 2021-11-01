@@ -105,7 +105,7 @@ func (d *DownloadManager) renderProgressBar(ctx context.Context, maxSize int) {
 			func() {
 				fmt.Printf("\nFile name: %s\n", d.fileName)
 				fmt.Printf("File size: %s\n", humanaReadableBytes(float64(d.fileSize)))
-				fmt.Printf("Total time: %s\n", d.totalTimeTaken)
+				fmt.Printf("Time elapsed: %s\n", d.totalTimeTaken)
 				fmt.Printf("Location: %s\n", d.location)
 			},
 		),
