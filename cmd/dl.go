@@ -81,8 +81,8 @@ func startDownload(cmd *cobra.Command, args []string) {
 
 	if cfg.AudoUpdate {
 		err := update.SelfUpdate(context.Background(), BuildDate, Version)
-		if err != nil {
-			fmt.Println("Failed to update dl:", err)
+		if err != nil && debug {
+			fmt.Println("dl: Error: failed to update dl:", err) //this error can be skipped
 		}
 	}
 
@@ -92,7 +92,8 @@ func startDownload(cmd *cobra.Command, args []string) {
 	}
 
 	if _, err := netUrl.ParseRequestURI(url); err != nil {
-		log.Fatalln(err)
+		fmt.Println("Error: invalid URL:", err)
+		return
 	}
 
 	dm := downloader.New()

@@ -59,11 +59,15 @@ func SelfUpdate(ctx context.Context, buildDate, version string) error {
 
 	switch os {
 	case "windows":
-		fmt.Println("Not implemented for Windows", arch)
+		return fmt.Errorf("update: not implemented for %s", os)
 	case "darwin":
-		err = updateBinary(ctx, releaseInfo.getDownloadURL("mac_"+arch))
+		err = updateBinary(ctx, releaseInfo.getDownloadURL("mac_amd64"))
 	case "linux":
-		fmt.Println("Not implemented for Linux", arch)
+		if arch == "amd64" {
+			err = updateBinary(ctx, releaseInfo.getDownloadURL("linux_amd64"))
+		} else {
+			err = updateBinary(ctx, releaseInfo.getDownloadURL("linux_386")) // i386
+		}
 	}
 	s.Stop()
 	fmt.Println()
