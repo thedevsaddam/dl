@@ -34,7 +34,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: mac_amd64
+          asset_path: bin/mac_amd64
           asset_name: mac_amd64
           asset_content_type: application/octet-stream
       - name: upload linux_amd64 binary
@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: linux_amd64
+          asset_path: bin/linux_amd64
           asset_name: linux_amd64
           asset_content_type: application/octet-stream
       - name: upload linux_386 binary
@@ -52,7 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: linux_386
+          asset_path: bin/linux_386
           asset_name: linux_386
           asset_content_type: application/octet-stream
       - name: upload windows_386 binary
@@ -61,7 +61,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: windows_386.exe
+          asset_path: bin/windows_386.exe
           asset_name: windows_386.exe
           asset_content_type: application/octet-stream
       - name: upload windows_amd64 binary
@@ -70,6 +70,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: windows_amd64.exe
+          asset_path: bin/windows_amd64.exe
           asset_name: windows_amd64.exe
           asset_content_type: application/octet-stream
