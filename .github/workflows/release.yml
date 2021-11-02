@@ -1,0 +1,75 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.*"
+
+jobs:
+  build_release:
+    name: build_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: build binary files
+        run: make binary
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: list current directory
+        run: ls -la
+      - name: upload darwin_amd64 binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: mac_amd64
+          asset_name: mac_amd64
+          asset_content_type: application/octet-stream
+      - name: upload linux_amd64 binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: linux_amd64
+          asset_name: linux_amd64
+          asset_content_type: application/octet-stream
+      - name: upload linux_386 binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: linux_386
+          asset_name: linux_386
+          asset_content_type: application/octet-stream
+      - name: upload windows_386 binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: windows_386.exe
+          asset_name: windows_386.exe
+          asset_content_type: application/octet-stream
+      - name: upload windows_amd64 binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: windows_amd64.exe
+          asset_name: windows_amd64.exe
+          asset_content_type: application/octet-stream

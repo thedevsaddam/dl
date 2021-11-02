@@ -12,7 +12,7 @@ go generate
 # MAC
 export GOARCH="amd64"
 export GOOS="darwin"
-export CGO_ENABLED=1
+export CGO_ENABLED=0
 go build -ldflags "-X github.com/thedevsaddam/dl/cmd.GitCommit=$GIT_COMMIT -X github.com/thedevsaddam/dl/cmd.Version=$TAG -X github.com/thedevsaddam/dl/cmd.BuildDate=$DATE" -o mac_amd64 -v .
 
 #LINUX
