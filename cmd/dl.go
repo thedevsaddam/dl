@@ -81,8 +81,8 @@ func startDownload(cmd *cobra.Command, args []string) {
 
 	if cfg.AudoUpdate {
 		err := update.SelfUpdate(context.Background(), BuildDate, Version)
-		if err != nil && debug {
-			fmt.Println("dl: Error: failed to update dl:", err) //this error can be skipped
+		if err != nil {
+			fmt.Println("Error: failed to update dl:", err) //this error can be skipped
 		}
 	}
 
