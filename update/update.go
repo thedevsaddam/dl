@@ -67,7 +67,7 @@ func SelfUpdate(ctx context.Context, buildDate, version string) error {
 	case "darwin":
 		err = updateBinary(ctx, releaseInfo.getDownloadURL("mac_amd64"))
 	case "linux":
-		if arch == "amd64" {
+		if arch == "amd64" || arch == "x86_64" {
 			err = updateBinary(ctx, releaseInfo.getDownloadURL("linux_amd64"))
 		} else {
 			err = updateBinary(ctx, releaseInfo.getDownloadURL("linux_386")) // i386
