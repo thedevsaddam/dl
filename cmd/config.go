@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	path    string
-	subPath string
+	path       string
+	subPath    string
+	autoUpdate string
 
 	cmdConfig = &cobra.Command{
 		Use:   "config",
@@ -28,6 +29,7 @@ func init() {
 	cmdConfig.Flags().StringVarP(&subPath, "subpath", "s", "", "sub directory map in this format subdirectoryName:.ext1,.ext2. e.g: video:.mp4,.mkv")
 	cmdConfig.Flags().IntVarP(&concurrent, "concurrent", "c", 0, "number of concurrent process will be running, default: 5")
 	cmdConfig.Flags().BoolVarP(&debug, "debug", "d", false, "display configuration")
+	cmdConfig.Flags().StringVarP(&autoUpdate, "auto-update", "a", "", "enable/disable auto-update. e.g: -a true, -a false")
 	cmdDL.AddCommand(cmdConfig)
 }
 
@@ -41,7 +43,14 @@ func setConfig(cmd *cobra.Command, args []string) {
 		path = dir
 	}
 
+	oldCfg := config.DefaultConfig()
 	newCfg := config.Config{Directory: path, Concurrency: uint(concurrent)}
+	newCfg.AutoUpdate = oldCfg.AutoUpdate
+	if autoUpdate == "true" {
+		newCfg.AutoUpdate = true
+	} else if autoUpdate == "false" {
+		newCfg.AutoUpdate = false
+	}
 
 	if subPath != "" {
 		newCfg.SubDirMap = config.DefaultConfig().SubDirMap // assign old config

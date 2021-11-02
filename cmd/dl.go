@@ -79,7 +79,7 @@ func initConfig() {
 func startDownload(cmd *cobra.Command, args []string) {
 	cfg := config.DefaultConfig()
 
-	if cfg.AudoUpdate {
+	if cfg.AutoUpdate {
 		err := update.SelfUpdate(context.Background(), BuildDate, Version)
 		if err != nil {
 			fmt.Println("Error: failed to update dl:", err) //this error can be skipped
