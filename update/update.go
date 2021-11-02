@@ -34,6 +34,10 @@ func SelfUpdate(ctx context.Context, buildDate, version string) error {
 		return fmt.Errorf("update: %v", err)
 	}
 
+	if releaseInfo.Draft || releaseInfo.Prerelease {
+		return nil
+	}
+
 	c, err := semver.NewConstraint(">" + version)
 	if err != nil {
 		return fmt.Errorf("update: %v", err)
