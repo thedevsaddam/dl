@@ -24,10 +24,11 @@ jobs:
           prerelease: false
           release_name: ${{ github.ref }}
           tag_name: ${{ github.ref }}
+          body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: list current directory
-        run: ls -la
+      - name: list directory
+        run: ls -la && ls -la bin
       - name: upload darwin_amd64 binary
         uses: actions/upload-release-asset@v1
         env:
