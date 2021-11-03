@@ -4,7 +4,9 @@ dl
 .coverage.txt
 bin/linux_386
 bin/linux_amd64
+bin/linux_arm64
 bin/mac_amd64
+bin/mac_arm64
 bin/windows_386.exe
 bin/windows_amd64.exe
 file_example_MP3_700KB.mp3
