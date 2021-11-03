@@ -67,8 +67,11 @@ func fetchReleaseInfo(ctx context.Context) (*ReleaseInfo, error) {
 	return &rf, nil
 }
 
-// updateBinary download the binary in /user/local/bin which is the default path and replace the old one
+// updateBinary download the binary in current binary and replace the old one
 func updateBinary(ctx context.Context, url string) error {
+	if url == "" {
+		return errors.New("update: empty download url")
+	}
 	ctx, cancel := context.WithTimeout(ctx, 120*time.Second)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)

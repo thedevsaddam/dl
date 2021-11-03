@@ -60,26 +60,11 @@ func SelfUpdate(ctx context.Context, buildDate, version string) error {
 	s.Prefix = fmt.Sprintf("Updating from %s to %s ( ", version, releaseInfo.Name)
 	s.Suffix = ")"
 	s.Start()
-
-	switch os {
-	case "windows":
-		if arch == "amd64" || arch == "x86_64" {
-			err = updateBinary(ctx, releaseInfo.getDownloadURL("windows_amd64.exe"))
-		} else {
-			err = updateBinary(ctx, releaseInfo.getDownloadURL("windows_386.exe"))
-		}
-
-	case "darwin":
-		err = updateBinary(ctx, releaseInfo.getDownloadURL("mac_amd64"))
-
-	case "linux":
-		if arch == "amd64" || arch == "x86_64" {
-			err = updateBinary(ctx, releaseInfo.getDownloadURL("linux_amd64"))
-		} else {
-			err = updateBinary(ctx, releaseInfo.getDownloadURL("linux_386")) // i386
-		}
+	name := fmt.Sprintf("%s_%s", os, arch)
+	if os == "windows" {
+		name = name + ".exe"
 	}
-
+	err = updateBinary(ctx, releaseInfo.getDownloadURL(name))
 	s.Stop()
 	fmt.Println()
 
