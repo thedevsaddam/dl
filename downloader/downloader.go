@@ -264,7 +264,7 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 	if d.option.path != "" {
 		d.option.log.Printf("Info: Root directory: %s\n", d.option.path)
 
-		fileName = fmt.Sprintf("%s/%s", d.option.path, d.fileName)
+		fileName = filepath.Join(d.option.path, d.fileName)
 
 		if !d.option.skipSubPathMap {
 			subPath := "other"
@@ -272,7 +272,7 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 				subPath = sp
 			}
 
-			makeSubDir := fmt.Sprintf("%s/%s", d.option.path, subPath)
+			makeSubDir := filepath.Join(d.option.path, subPath)
 			if _, err := os.Stat(makeSubDir); os.IsNotExist(err) {
 				if err := os.MkdirAll(makeSubDir, os.ModePerm); err != nil {
 					d.option.log.Printf("Error: failed to create sub-directory: %s\n", err.Error())
@@ -283,7 +283,7 @@ func (d *DownloadManager) Download(url string) *DownloadManager {
 				d.option.log.Printf("Info: Created sub-directory: %s\n", subPath)
 			}
 
-			fileName = fmt.Sprintf("%s/%s/%s", d.option.path, subPath, d.fileName)
+			fileName = filepath.Join(d.option.path, subPath, d.fileName)
 		}
 	}
 	d.location = fileName // set location value
