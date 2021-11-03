@@ -13,12 +13,12 @@ go generate
 export GOARCH="amd64"
 export GOOS="darwin"
 export CGO_ENABLED=0
-go build -ldflags "-X github.com/thedevsaddam/dl/cmd.GitCommit=$GIT_COMMIT -X github.com/thedevsaddam/dl/cmd.Version=$TAG -X github.com/thedevsaddam/dl/cmd.BuildDate=$DATE" -o bin/mac_amd64 -v .
+go build -ldflags "-X github.com/thedevsaddam/dl/cmd.GitCommit=$GIT_COMMIT -X github.com/thedevsaddam/dl/cmd.Version=$TAG -X github.com/thedevsaddam/dl/cmd.BuildDate=$DATE" -o bin/darwin_amd64 -v .
 
 export GOARCH="arm64"
 export GOOS="darwin"
 export CGO_ENABLED=0
-go build -ldflags "-X github.com/thedevsaddam/dl/cmd.GitCommit=$GIT_COMMIT -X github.com/thedevsaddam/dl/cmd.Version=$TAG -X github.com/thedevsaddam/dl/cmd.BuildDate=$DATE" -o bin/mac_arm64 -v .
+go build -ldflags "-X github.com/thedevsaddam/dl/cmd.GitCommit=$GIT_COMMIT -X github.com/thedevsaddam/dl/cmd.Version=$TAG -X github.com/thedevsaddam/dl/cmd.BuildDate=$DATE" -o bin/darwin_arm64 -v .
 
 #LINUX
 export GOARCH="amd64"
