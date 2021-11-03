@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/kardianos/osext"
 )
 
 type (
@@ -83,7 +85,7 @@ func updateBinary(ctx context.Context, url string) error {
 		return errors.New("update: failed to fetch binary file")
 	}
 
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	dir, err := osext.ExecutableFolder()
 	if err != nil {
 		return err
 	}
