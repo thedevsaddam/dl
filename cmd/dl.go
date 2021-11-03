@@ -39,8 +39,8 @@ var (
 	debug      bool
 
 	GitCommit = unknown
-	Version   = "v1.0.2"
-	BuildDate = "2021-10-15"
+	Version   = unknown
+	BuildDate = unknown
 
 	// cmdDL is the root command of DL application
 	cmdDL = &cobra.Command{
