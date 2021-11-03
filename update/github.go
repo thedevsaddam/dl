@@ -83,8 +83,12 @@ func updateBinary(ctx context.Context, url string) error {
 		return errors.New("update: failed to fetch binary file")
 	}
 
-	dir := "/usr/local/bin/"
-	fileName := dir + filepath.Base(os.Args[0])
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		return err
+	}
+
+	fileName := filepath.Join(dir, filepath.Base(os.Args[0]))
 	tmpFile := fileName + ".tmp"
 
 	if err := os.Chmod(fileName, 0777); err != nil {

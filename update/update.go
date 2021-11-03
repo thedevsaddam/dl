@@ -73,6 +73,7 @@ func SelfUpdate(ctx context.Context, buildDate, version string) error {
 			err = updateBinary(ctx, releaseInfo.getDownloadURL("linux_386")) // i386
 		}
 	}
+
 	s.Stop()
 	fmt.Println()
 
