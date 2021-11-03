@@ -79,6 +79,7 @@ $ dl config -c 10
 <details><summary>config.json</summary>
 <pre>
 {
+	"auto_update":true,
 	"directory":"",
 	"concurrency":5,
 	"sub_dir_map":{
