@@ -20,6 +20,8 @@ jobs:
           go-version: '1.17.2'
       - name: build binary files
         run: make binary
+      - name: list directory
+        run: ls -la && ls -la bin
       - name: release
         uses: actions/create-release@v1
         id: create_release
@@ -31,8 +33,6 @@ jobs:
           body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: list directory
-        run: ls -la && ls -la bin
       - name: upload darwin_amd64 binary
         uses: actions/upload-release-asset@v1
         env:
