@@ -12,11 +12,12 @@ import (
 )
 
 const (
-	layoutISO = "2006-01-02"
+	layoutISO    = "2006-01-02"
+	updateInDays = 3
 )
 
 // SelfUpdate update the application to its latest version
-// if the current release is 7days old and has a new update
+// if the current release is 3days old and has a new update
 func SelfUpdate(ctx context.Context, buildDate, version string) error {
 	if buildDate == "unknown" {
 		return errors.New("update: unable to update based on unkown build date/version")
@@ -25,7 +26,7 @@ func SelfUpdate(ctx context.Context, buildDate, version string) error {
 	if err != nil {
 		return fmt.Errorf("update: %v", err)
 	}
-	if (time.Since(currBinaryReleaseDate).Hours() / 24) <= 7 {
+	if (time.Since(currBinaryReleaseDate).Hours() / 24) <= updateInDays {
 		return nil
 	}
 
