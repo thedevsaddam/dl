@@ -67,6 +67,9 @@ func SelfUpdate(ctx context.Context, buildDate, version string) error {
 	err = updateBinary(ctx, releaseInfo.getDownloadURL(name))
 	s.Stop()
 	fmt.Println()
+	fmt.Println("Update includes:")
+	fmt.Print(releaseInfo.Body)
+	fmt.Println()
 
 	return err
 }
