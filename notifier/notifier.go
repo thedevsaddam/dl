@@ -1,6 +1,6 @@
 package notifier
 
-import "github.com/martinlindhe/notify"
+import "github.com/gen2brain/beeep"
 
 // Notifier represents a notifier type
 type Notifier struct {
@@ -19,5 +19,5 @@ func New(name string) *Notifier {
 // Notify send a notification to device
 func (n *Notifier) Notify(title, text string) {
 	iconPath, _ := getIconPath()
-	notify.Notify(n.appName, title, text, iconPath)
+	beeep.Notify(title, text, iconPath)
 }
