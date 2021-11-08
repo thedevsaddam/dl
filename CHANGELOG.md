@@ -1,5 +1,3 @@
-* Automate release process
-* Add self update functionality
-* Rename mac os binary name
-* Add support for linux+mac arm64
-* Update installation script
+* Change notifier package
+* Change binary update time from 7days -> 3days
+* Show update logs after self-update
