@@ -73,7 +73,7 @@ func updateBinary(ctx context.Context, url string) error {
 	if url == "" {
 		return errors.New("update: empty download url")
 	}
-	ctx, cancel := context.WithTimeout(ctx, 120*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
