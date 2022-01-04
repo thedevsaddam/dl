@@ -12,5 +12,5 @@ require (
 	github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749 // indirect
 	github.com/shurcooL/vfsgen v0.0.0-20200824052919-0d455de96546
 	github.com/spf13/cobra v1.3.0
-	github.com/thedevsaddam/retry v0.0.0-20200324223450-9769a859cc6d
+	github.com/thedevsaddam/retry v1.2.1
 )
