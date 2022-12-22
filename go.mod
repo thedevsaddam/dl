@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/Masterminds/semver v1.5.0
-	github.com/briandowns/spinner v1.18.0
+	github.com/briandowns/spinner v1.20.0
 	github.com/gen2brain/beeep v0.0.0-20210529141713-5586760f0cc1
 	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
